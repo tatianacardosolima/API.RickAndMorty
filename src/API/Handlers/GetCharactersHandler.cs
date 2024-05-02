@@ -76,7 +76,7 @@ namespace API.RickAndMorty.Handlers
             }
             
             
-            return new DefaultResponse(true,"", list.OrderBy(x=>x.id).ToList());
+            return new DefaultResponse(true,"Consulta realizada com sucesso", list.OrderBy(x=>x.id).ToList());
         }
 
         
