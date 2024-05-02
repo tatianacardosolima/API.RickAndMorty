@@ -1,7 +1,9 @@
-using API.RickAndMorty.Filters;
+﻿using API.RickAndMorty.Filters;
 using API.RickAndMorty.Interfaces.IServices;
 using API.RickAndMorty.Services;
+using Microsoft.OpenApi.Models;
 using System.Data;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +14,17 @@ builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = @"Consumir os dados de personagens e listar todos os que atendam os seguintes critérios: 
+           1) Status = unknown, 2)Species = alien 
+           e 3) Apareceram em mais de 1 episódio.  
+           O parâmetros Status e Species deixamos texto livre para simples demonstração.", Version = "v1", Description = "Código para demonstração" });
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);  
+
+});
 
 builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddTransient<ICharactersService, CharactersService>();

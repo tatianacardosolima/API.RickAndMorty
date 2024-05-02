@@ -21,6 +21,16 @@ namespace API.RickAndMorty.Controllers
             _cacheService = cacheService;
         }
 
+        ///<summary>Endpoint que realiza consulta dos personagens trazendo somente aqueles que participam de mais de um episódio. </summary>
+        ///<param name="status">Status do personagem alive, dead or unknown</param>
+        ///<param name="species">Espécies dos personagens</param>
+        ///<returns>Lista dos personagens</returns>
+        ///<remarks>
+        ///Esse código é uma demonstração de consumo de api utilizando Task.        
+        ///</remarks>
+        ///
+        ///<response code = "404">Não foi encontrado personagens na base</response>
+        ///<response code = "200">Consulta realizado com sucesso</response>
         [HttpGet()]
         public async Task<IActionResult> Get(string status, string species)
         {
@@ -32,17 +42,7 @@ namespace API.RickAndMorty.Controllers
             return Ok(characters);
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
-            var character = _charactersService.GetById(id);
-            if (character == null) 
-            {
-                return NotFound();
-            }
-            return Ok(character);
-        }
-     
+       
 
     }
 }
