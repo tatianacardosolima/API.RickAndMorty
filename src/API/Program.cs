@@ -14,6 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddTransient<ICharactersService, CharactersService>();
 
 builder.Services.AddMvc(config =>

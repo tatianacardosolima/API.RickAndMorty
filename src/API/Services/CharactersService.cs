@@ -11,10 +11,12 @@ namespace API.RickAndMorty.Services
     public class CharactersService : ICharactersService
     {
         private readonly string? _urlBase;
+        
 
         public CharactersService(IConfiguration configuration)
         {
             _urlBase = configuration["RickAndMorty:BaseUrl"];
+            
         }
 
         public async Task<List<CharacterResultDTO>> GetAsync(string status, string species)
@@ -22,6 +24,7 @@ namespace API.RickAndMorty.Services
 
             ServiceException.ThrowWhen(status == null, "O status é obrigatório");
             ServiceException.ThrowWhen(species == null, "A espécie é obrigatória");
+                        
 
             var list = new List<CharacterResultDTO>();
             var client = new RestClient();
@@ -49,9 +52,10 @@ namespace API.RickAndMorty.Services
                     {
                         client = new RestClient();
                         //request = new RestRequest($"{_urlBase}character/?&status={status}&species={species}&page={currentPage}", Method.Post);
-                        request = new RestRequest($"{_urlBase}character/?page={currentPage}", Method.Post);
+                        request = new RestRequest($"{_urlBase}character/?page={currentPage}", Method.Get);
                         request.AddHeader("Content-Type", "application/json");
                         response = await client.ExecuteAsync(request);
+                        result = JsonSerializer.Deserialize<CharacterDTO>(response.Content);
                         if (result != null)
                         {
                             list.AddRange(result.results.Where(x => x.episode.Length > 1));
@@ -62,7 +66,9 @@ namespace API.RickAndMorty.Services
                 Task.WaitAll(runnedTask);
                 
             }
-            return  list;
+            
+            
+            return  list.OrderBy(x=>x.id).ToList();
         }
 
         public CharacterResultDTO GetById(int id)
