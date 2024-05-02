@@ -1,35 +1,37 @@
-﻿using API.RickAndMorty.DTOs;
+﻿using API.RickAndMorty.Commands;
+using API.RickAndMorty.DTOs;
 using API.RickAndMorty.Exceptions;
 using API.RickAndMorty.Interfaces.IServices;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
 using System.Text.Json;
 
-namespace API.RickAndMorty.Services
+namespace API.RickAndMorty.Handlers
 {
-    public class CharactersService : ICharactersService
+    public class GetCharactersHandler : IRequestHandler<FilterCharectersRequest, DefaultResponse>
     {
         private readonly string? _urlBase;
         
 
-        public CharactersService(IConfiguration configuration)
+        public GetCharactersHandler(IConfiguration configuration)
         {
             _urlBase = configuration["RickAndMorty:BaseUrl"];
             
         }
 
-        public async Task<List<CharacterResultDTO>> GetAsync(string status, string species)
+        public async Task<DefaultResponse> Handle(FilterCharectersRequest filterCharectersRequest, CancellationToken cancellationToken)
         {
 
-            ServiceException.ThrowWhen(status == null, "O status é obrigatório.");
-            ServiceException.ThrowWhen(species == null, "A espécie é obrigatória.");
+            ServiceException.ThrowWhen(filterCharectersRequest.Status == null, "O status é obrigatório.");
+            ServiceException.ThrowWhen(filterCharectersRequest.Species == null, "A espécie é obrigatória.");
 
             var urlFinal = $"{_urlBase}character/?";
 
             // essa parte não esta no escopo, coloque apenas para testar a paginação.
-            if (status != "all") urlFinal += $"&status={status}";
-            if (species != "all") urlFinal += $"&species={species}";
+            if (filterCharectersRequest.Status != "all") urlFinal += $"&status={filterCharectersRequest.Status}";
+            if (filterCharectersRequest.Species != "all") urlFinal += $"&species={filterCharectersRequest.Species}";
 
             var list = new List<CharacterResultDTO>();
             var client = new RestClient();
@@ -58,8 +60,7 @@ namespace API.RickAndMorty.Services
                     {
                         client = new RestClient();
 
-                        request = new RestRequest($"{urlFinal}&page={currentPage}", Method.Get);
-                       // request = new RestRequest($"{_urlBase}character/?page={currentPage}", Method.Get);
+                        request = new RestRequest($"{urlFinal}&page={currentPage}", Method.Get);                       
                         request.AddHeader("Content-Type", "application/json");
                         response = await client.ExecuteAsync(request);
                         result = JsonSerializer.Deserialize<CharacterDTO>(response.Content);
@@ -75,7 +76,7 @@ namespace API.RickAndMorty.Services
             }
             
             
-            return  list.OrderBy(x=>x.id).ToList();
+            return new DefaultResponse(true,"", list.OrderBy(x=>x.id).ToList());
         }
 
         

@@ -1,6 +1,9 @@
-﻿using API.RickAndMorty.Filters;
+﻿using API.RickAndMorty.Commands;
+using API.RickAndMorty.Filters;
+using API.RickAndMorty.Handlers;
 using API.RickAndMorty.Interfaces.IServices;
 using API.RickAndMorty.Services;
+using MediatR;
 using Microsoft.OpenApi.Models;
 using System.Data;
 using System.Reflection;
@@ -27,7 +30,12 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddSingleton<ICacheService, CacheService>();
-builder.Services.AddTransient<ICharactersService, CharactersService>();
+
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
+
+builder.Services.AddScoped<IRequestHandler<FilterCharectersRequest, DefaultResponse>, GetCharactersHandler>();
 
 builder.Services.AddMvc(config =>
 {

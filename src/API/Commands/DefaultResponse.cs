@@ -1,17 +1,17 @@
-﻿namespace API.RickAndMorty.Outputs
+﻿namespace API.RickAndMorty.Commands
 {
-    public class DefaultOutput
+    public class DefaultResponse
     {
-        public DefaultOutput(bool success, string message, object data)
+        public DefaultResponse(bool success, string message, object data)
         {
             Success = success;
             Message = message;
             Data = data;
         }
-        public DefaultOutput(bool success, string message)
+        public DefaultResponse(bool success, string message)
         {
             Success = success;
-            Message = message;            
+            Message = message;
         }
         public bool Success { get; set; }
 

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using API.RickAndMorty.Exceptions;
-using API.RickAndMorty.Outputs;
+using API.RickAndMorty.Commands;
+
 
 namespace API.RickAndMorty.Filters
 {
@@ -32,7 +33,7 @@ namespace API.RickAndMorty.Filters
 
             response.StatusCode = status;
             response.ContentType = "application/json";
-            context.Result = new JsonResult(new DefaultOutput(false, mensagem));
+            context.Result = new JsonResult(new DefaultResponse(false, mensagem));
         }
     }
 }
